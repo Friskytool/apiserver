@@ -18,7 +18,9 @@ fn get_client() -> BasicClient {
         Some(TokenUrl::new("https://discord.com/api/oauth2/token".to_string()).unwrap()),
     )
     // Set the URL the user will be redirected to after the authorization process.
-    .set_redirect_uri(RedirectUrl::new("http://localhost:8000/oauth/callback".to_string()).unwrap())
+    .set_redirect_uri(
+        RedirectUrl::new(var("REDIRECT_URI").unwrap()).unwrap(),
+    )
 }
 
 #[get("/login")]
@@ -62,9 +64,9 @@ async fn callback_success(
 
         jar.add_private(Cookie::build("user", serde_json::to_string(&user).unwrap()).finish());
 
-        Flash::success(Redirect::to("/callback"), "Logged in")
+        Flash::success(Redirect::to("/static/callback.html"), "Logged in")
     } else {
-        Flash::error(Redirect::to("/callback"), "Failed to log in")
+        Flash::error(Redirect::to("/static/callback.html"), "Failed to log in")
     }
 }
 
@@ -75,7 +77,7 @@ async fn callback_error(
     error_description: String,
     state: String,
 ) -> Flash<Redirect> {
-    Flash::error(Redirect::to("/callback"), "Error Logging In")
+    Flash::error(Redirect::to("/static/callback.html"), "Error Logging In")
 }
 
 #[get("/logout")]

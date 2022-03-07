@@ -1,0 +1,30 @@
+[
+    {
+        "premium": false,
+        "name": "Giveaways",
+        "slug": "giveaways",
+        "key": "giveaways",
+        "description": "Create giveaways and contests with requirements."
+    },
+    {
+        "premium": false,
+        "name": "Timers",
+        "slug": "timers",
+        "key": "timers",
+        "description": "Create timers that notify users and time events."
+    },
+    {
+        "premium": false,
+        "name": "Message Counting",
+        "slug": "message-counting",
+        "key": "message_counting",
+        "description": "A plugin that allows you to count messages."
+    },
+    {
+        "premium": false,
+        "name": "Utility",
+        "slug": "utility",
+        "key": "utility",
+        "description": "A plugin that contains various useful commands."
+    }
+]

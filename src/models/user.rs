@@ -1,5 +1,6 @@
 use oauth2::{basic::BasicTokenType, AccessToken, RefreshToken, Scope};
 use rocket::{
+    http::Status,
     request::{self, FromRequest},
     serde::{Deserialize, Serialize},
     Request,
@@ -36,24 +37,26 @@ impl User {
 
     pub async fn get_guilds(&self) -> Option<Value> {
         let client = Client::new(format!("Bearer {}", self.access_token.secret()));
-
-        serde_json::from_str(
-            &client
-                .current_user_guilds()
-                .exec()
-                .await
-                .unwrap()
-                .text()
-                .await
-                .unwrap(),
-        )
-        .ok()
+        match client.current_user_guilds().exec().await {
+            Ok(response) => serde_json::from_str(&response.text().await.unwrap()).ok(),
+            Err(e) => {
+                dbg!(e);
+                None
+            }
+        }
     }
+}
+
+#[derive(Debug)]
+#[allow(dead_code)]
+pub enum MissingAuthorization {
+    Missing,
+    Invalid,
 }
 
 #[rocket::async_trait]
 impl<'r> FromRequest<'r> for User {
-    type Error = std::convert::Infallible;
+    type Error = MissingAuthorization;
 
     // use serde_json to create a User from the cookie
     async fn from_request(request: &'r Request<'_>) -> request::Outcome<User, Self::Error> {
@@ -64,7 +67,9 @@ impl<'r> FromRequest<'r> for User {
 
                 request::Outcome::Success(user)
             }
-            None => request::Outcome::Forward(()),
+            None => {
+                request::Outcome::Failure((Status::Unauthorized, MissingAuthorization::Missing))
+            }
         }
     }
 }

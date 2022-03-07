@@ -1,37 +1,78 @@
-#![feature(proc_macro_hygiene)]
-#![feature(decl_macro)]
-
 #[macro_use]
 extern crate rocket;
+#[macro_use]
+extern crate bson;
+#[macro_use]
+extern crate lazy_static;
 extern crate dotenv;
+extern crate mongodb;
+extern crate rocket_db_pools;
 extern crate serde_derive;
+
+pub mod db;
 pub mod models;
 
-mod api;
+mod database;
 mod oauth;
+mod user;
 
-use std::path::PathBuf;
+use db::Db;
+use rocket::fs::{relative, FileServer};
+use rocket_db_pools::Database;
 
-use rocket::fs::{FileServer, NamedFile};
+use rocket::fairing::{Fairing, Info, Kind};
+use rocket::http::Header;
+use rocket::{Request, Response, Rocket};
 
-#[get("/<path..>", rank = 5)]
-async fn svelte(path: PathBuf) -> Option<NamedFile> {
-    if !path.starts_with("api/") {
-        NamedFile::open("public/index.html").await.ok()
-    } else {
-        None
+pub struct CORS;
+
+#[rocket::async_trait]
+impl Fairing for CORS {
+    fn info(&self) -> Info {
+        Info {
+            name: "Add CORS headers to responses",
+            kind: Kind::Response,
+        }
     }
+
+    async fn on_response<'r>(&self, _request: &'r Request<'_>, response: &mut Response<'r>) {
+        response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
+        response.set_header(Header::new(
+            "Access-Control-Allow-Methods",
+            "POST, GET, PATCH, OPTIONS",
+        ));
+        response.set_header(Header::new("Access-Control-Allow-Headers", "*"));
+        response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
+    }
+}
+
+#[options("/<_..>", rank = 7)]
+async fn cors() -> String {
+    "".to_string()
 }
 
 #[launch]
 fn rocket() -> _ {
     dotenv::dotenv().ok();
-    rocket::build()
-        .mount(
-            "/",
-            FileServer::from(concat!(env!("CARGO_MANIFEST_DIR"), "/public")).rank(4),
-        )
-        .mount("/", routes![svelte])
-        .mount("/oauth", oauth::routes())
-        .mount("/api", api::routes())
+
+    let production =
+        std::env::var("ROCKET_ENV").unwrap_or("development".to_string()) == "production";
+    println!("Running in production: {}", production);
+    let r: Rocket<_> = rocket::build()
+        .attach(CORS)
+        .attach(Db::init())
+        .mount("/static", FileServer::from(relative!("static")).rank(9))
+        .mount("/static", routes![cors])
+        .mount("/api/oauth", oauth::routes())
+        .mount("/api/", database::routes())
+        .mount("/api/user", user::routes());
+
+    let r = if !production {
+        println!("mounting frontend dist");
+        r.mount("/", FileServer::from(relative!("../client/dist")).rank(8))
+            .mount("/api", routes![cors])
+    } else {
+        r
+    };
+    r
 }

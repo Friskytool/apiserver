@@ -1,0 +1,258 @@
+{
+    "giveaways": {
+        "blacklisted_roles": {
+            "name": "Blacklisted Roles",
+            "type": "roles",
+            "default": [],
+            "description": "These roles will **always** be blacklisted from all giveaways"
+        },
+        "bypass_roles": {
+            "name": "Bypass Roles",
+            "type": "list",
+            "description": "These roles will **always** bypass all requirements in a giveaway",
+            "default": []
+        },
+        "roles": {
+            "name": "Giveaway Roles",
+            "type": "roles",
+            "description": "These roles can create, end, and reroll giveaways",
+            "default": []
+        },
+        "header": {
+            "name": "Giveaway Header",
+            "type": "string",
+            "description": "The message above the giveaway embed",
+            "default": ""
+        },
+        "footer": {
+            "name": "Giveaway Footer",
+            "type": "string",
+            "description": "The message on the giveaway embed footer",
+            "default": "{winners} winners | Ends at"
+        },
+        "color": {
+            "name": "Giveaway Embed Color",
+            "type": "string",
+            "description": "The color of the giveaway embed as a **hex code**\nExamples: `#2ecc71` (green), `#7289da` (blurple)",
+            "default": "default"
+        },
+        "description": {
+            "name": "Giveaway Description",
+            "type": "string",
+            "description": "The description of the giveaway embed.\nVariables:\n",
+            "default": "React with {emoji} to enter\n{time}\n{requirements}\nHosted by {donor(mention)}"
+        },
+        "end_description": {
+            "name": "Giveaway End Description",
+            "type": "string",
+            "description": "The description of the giveaway embed after it has ended",
+            "default": "{winners}\n{requirements}\nHosted By: {host(mention)}"
+        },
+        "message": {
+            "name": "Giveaway Message",
+            "type": "string",
+            "description": "The message that gets sent after the giveaway has started in an embed",
+            "default": "{message}"
+        },
+        "ping": {
+            "name": "Giveaway Ping",
+            "type": "string",
+            "description": "The pings the bot should send once the giveaway starts",
+            "default": ""
+        },
+        "end_message": {
+            "name": "Giveaway End Message",
+            "type": "string",
+            "description": "The message that gets sent when a giveaway ends",
+            "default": "{winners} has won the giveaway for {prize}\n{message(jump_url)}"
+        },
+        "reroll_message": {
+            "name": "Giveaway Reroll Message",
+            "type": "string",
+            "description": "The message that gets sent when a user is rerolled only users are able to be mentioned from this message",
+            "default": "{winners} has won the reroll for {prize}\n{message(jump_url)}"
+        },
+        "winner_message": {
+            "name": "Giveaway Winner Message",
+            "type": "string",
+            "description": "The message that gets dm'd to all of the giveaway winners",
+            "default": "You have won the giveaway for [{prize}]({message(jump_url)}) in {server(name)}"
+        },
+        "dm_winner": {
+            "name": "Giveaway DM Winner",
+            "type": "boolean",
+            "description": "A toggle to dm the winners of a giveaway after they win or not",
+            "default": true
+        },
+        "dm_host": {
+            "name": "Giveaway DM Host",
+            "type": "boolean",
+            "description": "To dm the host of the giveaway when a giveaway ends",
+            "default": true
+        },
+        "default_requirement": {
+            "name": "Default Requirement",
+            "type": "string",
+            "description": "The default requirement for **all** giveaways.This contains variables for {message} and {channel} so you can create channel-specific requirements with a bit of TagScript",
+            "default": ""
+        },
+        "confirm_entries": {
+            "name": "Confirm Entries",
+            "type": "boolean",
+            "description": "Whether to dm people that their reaction is valid or not",
+            "default": false
+        },
+        "confirmation_message": {
+            "name": "Confirmation Message",
+            "type": "string",
+            "description": "The message that gets sent to people to confirm that their entry has been recieved. If a user does not recieve a dm but has still reacted **they will still be considered**",
+            "default": "Your entry for [this]({message(jump_url)}) giveaway has been approved"
+        }
+    },
+    "utility": {
+        "afk_blacklist_roles": {
+            "name": "AFK Blacklist Roles",
+            "type": "list",
+            "description": "Roles that are blacklisted from using afk",
+            "default": []
+        },
+        "afk_roles": {
+            "name": "AFK Roles",
+            "type": "list",
+            "description": "The roles that a user requires to use the afk command",
+            "default": []
+        },
+        "auto_remove_afk": {
+            "name": "Auto Remove AFK",
+            "type": "boolean",
+            "description": "When this setting is enabled a user's afk will auto remove when they start to speak",
+            "default": false
+        },
+        "botstatus": {
+            "name": "Bot Status",
+            "type": "string",
+            "description": "The status of your custom bot",
+            "default": "{p}help | frisky.dev"
+        }
+    },
+    "timers": {
+        "description": {
+            "name": "Timer Description",
+            "type": "string",
+            "description": "The description of the timer",
+            "default": "{time}"
+        },
+        "emoji": {
+            "name": "Timer Emoji",
+            "type": "string",
+            "description": "The emoji that users have to react to get notified about a timer ending",
+            "default": "⏰"
+        },
+        "end_message": {
+            "name": "Timer End Message",
+            "type": "string",
+            "description": "The message that gets sent when a timer completes this **does not** include the mentions of users who have reacted",
+            "default": "The timer for {prize} has ended\n{message(jump_url)}"
+        },
+        "reminder": {
+            "name": "Timer Reminder",
+            "type": "boolean",
+            "description": "Whether to remind users of timers ending or not",
+            "default": true
+        },
+        "roles": {
+            "name": "Timer Roles",
+            "type": "roles",
+            "description": "The role that users require to run timer commands other than tlist.\n`ADMINISTRATOR` permissions override this role",
+            "default": []
+        }
+    },
+    "mathsolving": {
+        "reaction": {
+            "name": "Add Reaction",
+            "type": "boolean",
+            "description": "If the bot should add a reaction for math equations",
+            "default": true
+        }
+    },
+    "settings": {
+        "modroles": {
+            "name": "Mod Roles",
+            "type": "list",
+            "description": "This role overrides the permissions needed to edit settings in the bot. Users with this role do not need `ADMINISTRATOR` or `MANAGE_SERVER` permissions to run settings commands",
+            "default": []
+        },
+        "prefix": {
+            "name": "Bot Prefix",
+            "type": "string",
+            "description": "The bot's prefix",
+            "default": "+"
+        }
+    },
+    "dankmemer": {
+        "trade_logging_channel": {
+            "name": "Trade Logging Channel",
+            "type": "string",
+            "description": "The channel to send trade logs into",
+            "default": "None"
+        },
+        "trade_logging_message": {
+            "name": "Trade Logging Message",
+            "type": "string",
+            "description": "The message that gets sent when a dank memer trade happens",
+            "default": "{sender(mention)} has just sent {reciever(mention)} `{amount}` in {channel(mention)}\n\n**[Link]({message(jump_url)})**"
+        }
+    },
+    "donators": {
+        "logging_channels": {
+            "name": "Donator Logging Channels",
+            "type": "string",
+            "description": "The channel that donations get logged to",
+            "default": "None"
+        },
+        "logging_message": {
+            "name": "Donator Logging Message",
+            "type": "string",
+            "description": "The message that gets sent in the donation logging channel",
+            "default": "{donor(mention)} has just donated `{amount}`\nTotal Donated: `{totalamount}`\n{if({event}!=None):Event `{event}`\n}[link]({link})"
+        },
+        "roles": {
+            "name": "Donator Roles",
+            "type": "list",
+            "description": "The roles that can manage donations",
+            "default": []
+        }
+    },
+    "reputation": {
+        "extra_reputation_roles": {
+            "name": "Extra Reputation Roles",
+            "type": "object",
+            "description": "These roles give users a multiplier on reputation similar to extra entries on a friskytool giveaway\n\nUsage: <multi : number> <role : Role>",
+            "default": {}
+        },
+        "logging_channels": {
+            "name": "Reputation Logging Channels",
+            "type": "string",
+            "description": "The channel to log reputation increases into",
+            "default": "None"
+        },
+        "logging_message": {
+            "name": "Reputation Logging Message",
+            "type": "string",
+            "description": "The message that gets logged when one user \"reps\" another user",
+            "default": "{reputer(mention)} has just increased the reputation level of {reputed(mention)} by {amount}\n\n{reputed(mention)} now has a reputation level of {after}"
+        },
+        "requirement": {
+            "name": "Reputation Requirement",
+            "type": "string",
+            "description": "The requirement a user needs to add or remove reputation",
+            "default": "None"
+        },
+        "roles": {
+            "name": "Reputation Roles",
+            "type": "list",
+            "description": "These are the roles that can manage reputation counts for different users",
+            "default": []
+        }
+    }
+}

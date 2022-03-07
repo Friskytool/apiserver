@@ -1,2 +1,5 @@
 /target
+
+# database keys
 .env
+Rocket.toml

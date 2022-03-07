@@ -6,11 +6,16 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-rocket = {version = "0.5.0-rc.1", features = ["secrets", "json"]}
+
+mongodb = { version = "2.1.0"}
+bson = "2.1.0"
+rocket = {git = "https://github.com/SergioBenitez/Rocket.git", features = ["json", "secrets"]}
+rocket_db_pools = {git = "https://github.com/SergioBenitez/Rocket.git"}
 oauth2 = "4.1.0"
-serde = "1.0.126"
+serde = {version = "1.0.126", features=["derive"]}
 serde_json = "1.0.64"
 serde_derive = "1.0.126"
 reqwest = "0.11.9"
 dotenv = "0.15.0"
 twilight-http = "0.9.1"
+lazy_static = "1.4.0"

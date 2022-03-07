@@ -17,8 +17,8 @@ async fn guilds(user: User) -> Option<Value> {
     user.get_guilds().await
 }
 
-#[get("/guilds/<guild_id>")]
-async fn get_guild(_user: User, guild_id: u64) -> Option<Value> {
+#[get("/guilds/<_guild_id>")]
+async fn get_guild(_user: User, _guild_id: u64) -> Option<Value> {
     Some(Value::Null)
 }
 

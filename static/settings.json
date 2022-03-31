@@ -40,7 +40,7 @@
             "name": "Giveaway Description",
             "type": "string",
             "description": "The description of the giveaway embed.\nVariables:\n",
-            "default": "React with {emoji} to enter\n{time}\n{requirements}\nHosted by {donor(mention)}"
+            "default": "Ends {time}\n{requirements}\nHosted by {donor}"
         },
         "end_description": {
             "name": "Giveaway End Description",
@@ -152,7 +152,7 @@
             "name": "Timer End Message",
             "type": "string",
             "description": "The message that gets sent when a timer completes this **does not** include the mentions of users who have reacted",
-            "default": "The timer for {prize} has ended\n{message(jump_url)}"
+            "default": "The timer for `{title}` has ended"
         },
         "reminder": {
             "name": "Timer Reminder",

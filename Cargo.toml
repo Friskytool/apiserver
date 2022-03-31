@@ -8,9 +8,10 @@ edition = "2021"
 [dependencies]
 
 mongodb = { version = "2.1.0"}
+deadpool-redis = {version = "0.10.2"}
 bson = "2.1.0"
 rocket = {git = "https://github.com/SergioBenitez/Rocket.git", features = ["json", "secrets"]}
-rocket_db_pools = {git = "https://github.com/SergioBenitez/Rocket.git"}
+rocket_db_pools = {git = "https://github.com/SergioBenitez/Rocket.git", features=["mongodb", "deadpool_redis"]}
 oauth2 = "4.1.0"
 serde = {version = "1.0.126", features=["derive"]}
 serde_json = "1.0.64"

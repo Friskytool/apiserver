@@ -16,13 +16,13 @@ mod database;
 mod oauth;
 mod user;
 
-use db::Db;
+use db::{MongoDB, Redis};
 use rocket::fs::{relative, FileServer};
 use rocket_db_pools::Database;
 
 use rocket::fairing::{Fairing, Info, Kind};
 use rocket::http::Header;
-use rocket::{Request, Response, Rocket};
+use rocket::{routes, Request, Response, Rocket};
 
 pub struct CORS;
 
@@ -36,12 +36,18 @@ impl Fairing for CORS {
     }
 
     async fn on_response<'r>(&self, _request: &'r Request<'_>, response: &mut Response<'r>) {
-        response.set_header(Header::new("Access-Control-Allow-Origin", "*"));
+        response.set_header(Header::new(
+            "Access-Control-Allow-Origin",
+            "dashboard.squid.pink",
+        ));
         response.set_header(Header::new(
             "Access-Control-Allow-Methods",
             "POST, GET, PATCH, OPTIONS",
         ));
-        response.set_header(Header::new("Access-Control-Allow-Headers", "*"));
+        response.set_header(Header::new(
+            "Access-Control-Allow-Headers",
+            "dashboard.squid.pink",
+        ));
         response.set_header(Header::new("Access-Control-Allow-Credentials", "true"));
     }
 }
@@ -60,7 +66,8 @@ fn rocket() -> _ {
     println!("Running in production: {}", production);
     let r: Rocket<_> = rocket::build()
         .attach(CORS)
-        .attach(Db::init())
+        .attach(MongoDB::init())
+        .attach(Redis::init())
         .mount("/static", FileServer::from(relative!("static")).rank(9))
         .mount("/static", routes![cors])
         .mount("/api/oauth", oauth::routes())

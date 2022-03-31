@@ -1,2 +1,5 @@
 pub mod mongo;
-pub use mongo::Db;
+pub mod redis;
+
+pub use mongo::Db as MongoDB;
+pub use redis::Db as Redis;

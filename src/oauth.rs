@@ -7,6 +7,7 @@ use oauth2::{
 };
 use rocket::http::{Cookie, CookieJar};
 use rocket::response::{Flash, Redirect};
+use rocket::routes;
 use std::env::var;
 //use url::Url;
 
@@ -18,9 +19,7 @@ fn get_client() -> BasicClient {
         Some(TokenUrl::new("https://discord.com/api/oauth2/token".to_string()).unwrap()),
     )
     // Set the URL the user will be redirected to after the authorization process.
-    .set_redirect_uri(
-        RedirectUrl::new(var("REDIRECT_URI").unwrap()).unwrap(),
-    )
+    .set_redirect_uri(RedirectUrl::new(var("REDIRECT_URI").unwrap()).unwrap())
 }
 
 #[get("/login")]

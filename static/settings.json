@@ -70,7 +70,7 @@
             "name": "Giveaway Reroll Message",
             "type": "string",
             "description": "The message that gets sent when a user is rerolled only users are able to be mentioned from this message",
-            "default": "{winners} has won the reroll for {prize}\n{message(jump_url)}"
+            "default": "{winners} has won the reroll for {prize}\n{link}"
         },
         "winner_message": {
             "name": "Giveaway Winner Message",
@@ -167,18 +167,18 @@
             "default": []
         }
     },
-    "mathsolving": {
+    "math_solving": {
         "reaction": {
             "name": "Add Reaction",
             "type": "boolean",
-            "description": "If the bot should add a reaction for math equations",
+            "description": "If the bot should add a reaction for math equations or automatically solve them",
             "default": true
         }
     },
     "settings": {
         "modroles": {
             "name": "Mod Roles",
-            "type": "list",
+            "type": "roles",
             "description": "This role overrides the permissions needed to edit settings in the bot. Users with this role do not need `ADMINISTRATOR` or `MANAGE_SERVER` permissions to run settings commands",
             "default": []
         },
@@ -189,10 +189,10 @@
             "default": "+"
         }
     },
-    "dankmemer": {
+    "dank_memer": {
         "trade_logging_channel": {
             "name": "Trade Logging Channel",
-            "type": "string",
+            "type": "channel",
             "description": "The channel to send trade logs into",
             "default": "None"
         },

@@ -11,12 +11,15 @@ use crate::{
 use bson::Document;
 use deadpool_redis::redis::{pipe, AsyncCommands};
 use mongodb::options::FindOneAndUpdateOptions;
-use rocket::routes;
+
 use rocket_db_pools::Connection;
 use serde_json::Value;
 
 #[get("/guilds/<guild_id>/settings")]
-pub async fn settings(conn: Connection<MongoDB>, guild_id: u64) -> Result<Json<Document>, Status> {
+pub async fn get_settings(
+    conn: Connection<MongoDB>,
+    guild_id: u64,
+) -> Result<Json<Document>, Status> {
     match conn
         .database(&MONGO_DB)
         .collection::<Document>("settings")
@@ -31,7 +34,7 @@ pub async fn settings(conn: Connection<MongoDB>, guild_id: u64) -> Result<Json<D
 
 #[post("/guilds/<guild_id>/settings", format = "json", data = "<data>")]
 pub async fn edit_settings(
-    // _user: User,
+    _user: User,
     conn: Connection<MongoDB>,
     guild_id: u64,
     data: Json<Value>,
@@ -60,7 +63,7 @@ pub async fn edit_settings(
 }
 
 #[get("/guilds/<guild_id>/plugins")]
-pub async fn plugins(
+pub async fn get_plugins(
     mut conn: Connection<Redis>,
     _user: User,
     guild_id: u64,
@@ -110,29 +113,4 @@ pub async fn edit_plugins(
     } else {
         Status::Accepted
     }
-}
-
-#[get("/guilds/<guild_id>")]
-pub async fn guild(
-    // _user: User,
-    conn: Connection<MongoDB>,
-    guild_id: u64,
-) -> Result<Json<Document>, Status> {
-    match conn
-        .database(&MONGO_DB)
-        .collection::<Document>("servers")
-        .find_one(doc! {"_id":guild_id.to_string()}, None)
-        .await
-    {
-        Ok(Some(cursor)) => Ok(Json(cursor)),
-        Ok(None) => Err(Status::NotFound),
-        Err(e) => {
-            dbg!(e);
-            Err(Status::InternalServerError)
-        }
-    }
-}
-
-pub fn routes() -> Vec<rocket::Route> {
-    routes![guild, settings, edit_settings, plugins, edit_plugins]
 }

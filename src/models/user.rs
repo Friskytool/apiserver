@@ -1,3 +1,5 @@
+use crate::db::Redis;
+use deadpool_redis::redis::AsyncCommands;
 use oauth2::{basic::BasicTokenType, AccessToken, RefreshToken, Scope};
 use rocket::{
     http::Status,
@@ -5,10 +7,10 @@ use rocket::{
     serde::{Deserialize, Serialize},
     Request,
 };
+use rocket_db_pools::Connection;
 use serde_json::Value;
 use std::time::Duration;
 use twilight_http::Client;
-
 #[derive(Debug, Serialize, Deserialize)]
 pub struct User {
     pub access_token: AccessToken,
@@ -33,6 +35,28 @@ impl User {
                 .unwrap(),
         )
         .ok()
+    }
+
+    pub async fn get_cache_data(&self, pool: &mut Connection<Redis>) -> Option<Value> {
+        let data: Option<String> = pool
+            .get(format!("user:{}:data", self.access_token.secret()))
+            .await
+            .ok();
+
+        if let Some(data) = data {
+            Some(serde_json::from_str(&data).unwrap())
+        } else {
+            let data = self.get_data().await;
+            let _: Option<()> = pool
+                .set_ex(
+                    format!("user:{}:data", self.access_token.secret()),
+                    serde_json::to_string(&data).unwrap(),
+                    3600,
+                )
+                .await
+                .ok();
+            data
+        }
     }
 
     pub async fn get_guilds(&self) -> Option<Value> {
@@ -60,11 +84,46 @@ impl<'r> FromRequest<'r> for User {
 
     // use serde_json to create a User from the cookie
     async fn from_request(request: &'r Request<'_>) -> request::Outcome<User, Self::Error> {
+        let segments: Vec<&str> = request.uri().path().segments().collect();
+        let guild_id: Option<u64> = if segments.contains(&"guilds") {
+            let mut i: usize = 0;
+            for x in 0..segments.len() {
+                if segments[x] == "guilds" {
+                    i = x;
+                    break;
+                }
+            }
+            segments
+                .get(i + 1)
+                .and_then(|s: &&str| s.parse::<u64>().ok())
+        } else {
+            None
+        };
         let cookie = request.cookies().get_private("user");
         match cookie {
             Some(cookie) => {
-                let user = serde_json::from_str(&cookie.value()).unwrap();
+                let user: User = serde_json::from_str(&cookie.value()).unwrap();
 
+                if guild_id.is_some() {
+                    let mut pool = request.guard::<Connection<Redis>>().await.unwrap();
+
+                    let data = user.get_cache_data(&mut pool).await.unwrap();
+                    dbg!(&data);
+                    if !pool
+                        .exists::<_, bool>(format!(
+                            "member.{}.{}",
+                            guild_id.unwrap(),
+                            data.get("id").unwrap().as_str().unwrap()
+                        ))
+                        .await
+                        .unwrap_or(false)
+                    {
+                        return request::Outcome::Failure((
+                            Status::Unauthorized,
+                            MissingAuthorization::Missing,
+                        ));
+                    }
+                }
                 request::Outcome::Success(user)
             }
             None => {

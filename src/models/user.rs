@@ -11,7 +11,29 @@ use rocket_db_pools::Connection;
 use serde_json::Value;
 use std::time::Duration;
 use twilight_http::Client;
-#[derive(Debug, Serialize, Deserialize)]
+
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
+pub struct Guild {
+    pub name: String,
+    pub id: String,
+    pub icon: Option<String>,
+    pub owner: bool,
+    pub permissions: String,
+    pub features: Vec<String>,
+    pub bot_in_guild: Option<bool>,
+}
+
+impl Guild {
+    pub async fn setup(&mut self, conn: &mut Connection<Redis>) {
+        if let Ok(value) = conn
+            .sismember::<_, _, bool>("guilds", self.id.clone())
+            .await
+        {
+            self.owner = value;
+        }
+    }
+}
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct User {
     pub access_token: AccessToken,
     pub token_type: BasicTokenType,
@@ -59,10 +81,15 @@ impl User {
         }
     }
 
-    pub async fn get_guilds(&self) -> Option<Value> {
+    pub async fn get_guilds(&self) -> Option<Vec<Guild>> {
         let client = Client::new(format!("Bearer {}", self.access_token.secret()));
         match client.current_user_guilds().exec().await {
-            Ok(response) => serde_json::from_str(&response.text().await.unwrap()).ok(),
+            Ok(response) => {
+                let guilds: Vec<Guild> =
+                    serde_json::from_str(&response.text().await.unwrap()).unwrap();
+
+                Some(guilds)
+            }
             Err(e) => {
                 dbg!(e);
                 None
@@ -108,7 +135,6 @@ impl<'r> FromRequest<'r> for User {
                     let mut pool = request.guard::<Connection<Redis>>().await.unwrap();
 
                     let data = user.get_cache_data(&mut pool).await.unwrap();
-                    dbg!(&data);
                     if !pool
                         .exists::<_, bool>(format!(
                             "member.{}.{}",

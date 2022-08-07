@@ -15,16 +15,23 @@
     },
     {
         "premium": false,
-        "name": "Message Counting",
-        "slug": "message-counting",
-        "key": "message_counting",
-        "description": "A plugin that allows you to count messages."
-    },
-    {
-        "premium": false,
         "name": "Utility",
         "slug": "utility",
         "key": "utility",
-        "description": "A plugin that contains various useful commands."
+        "description": "Various useful commands like afk and tp."
+    },
+    {
+        "premium": false,
+        "name": "Dank Memer Tracking",
+        "slug": "dank-memer",
+        "key": "dank_memer",
+        "description": "Track dank memer trades among users for use in giveaways or analytics."
+    },
+    {
+        "premium": false,
+        "name": "Math Solving",
+        "slug": "math-solving",
+        "key": "math_solving",
+        "description": "Automatically solve math problems sent into chat without prefixes"
     }
 ]

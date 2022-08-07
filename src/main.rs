@@ -10,6 +10,7 @@ extern crate rocket_db_pools;
 extern crate serde_derive;
 
 pub mod db;
+pub mod http;
 pub mod models;
 
 mod database;
@@ -62,7 +63,7 @@ fn rocket() -> _ {
     dotenv::dotenv().ok();
 
     let production =
-        std::env::var("ROCKET_ENV").unwrap_or("development".to_string()) == "production";
+        std::env::var("ROCKET_ENV").unwrap_or("production".to_string()) == "production";
     println!("Running in production: {}", production);
     let r: Rocket<_> = rocket::build()
         .attach(CORS)

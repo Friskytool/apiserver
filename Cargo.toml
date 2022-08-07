@@ -10,13 +10,22 @@ edition = "2021"
 mongodb = { version = "2.1.0"}
 deadpool-redis = {version = "0.10.2"}
 bson = "2.1.0"
-rocket = {git = "https://github.com/SergioBenitez/Rocket.git", features = ["json", "secrets"]}
-rocket_db_pools = {git = "https://github.com/SergioBenitez/Rocket.git", features=["mongodb", "deadpool_redis"]}
 oauth2 = "4.1.0"
 serde = {version = "1.0.126", features=["derive"]}
 serde_json = "1.0.64"
 serde_derive = "1.0.126"
 reqwest = "0.11.9"
 dotenv = "0.15.0"
-twilight-http = "0.9.1"
+twilight-http = "0.10.1"
+twilight-model = "0.10.1"
+twilight-validate = "0.10.1"
 lazy_static = "1.4.0"
+regex = "1.5.5"
+
+[dependencies.rocket]
+git = "https://github.com/SergioBenitez/Rocket.git"
+features = ["json", "secrets"]
+
+[dependencies.rocket_db_pools]
+git = "https://github.com/SergioBenitez/Rocket.git"
+features = ["mongodb", "deadpool_redis"]

@@ -11,21 +11,20 @@ use rocket::routes;
 use std::env::var;
 //use url::Url;
 
-fn get_client() -> BasicClient {
-    BasicClient::new(
+lazy_static!(
+    static ref CLIENT: BasicClient = BasicClient::new(
         ClientId::new(var("CLIENT_ID").unwrap()),
         Some(ClientSecret::new(var("CLIENT_SECRET").unwrap())),
         AuthUrl::new("https://discord.com/api/oauth2/authorize".to_string()).unwrap(),
         Some(TokenUrl::new("https://discord.com/api/oauth2/token".to_string()).unwrap()),
     )
     // Set the URL the user will be redirected to after the authorization process.
-    .set_redirect_uri(RedirectUrl::new(var("REDIRECT_URI").unwrap()).unwrap())
-}
+    .set_redirect_uri(RedirectUrl::new(var("REDIRECT_URI").unwrap()).unwrap());
+);
 
 #[get("/login")]
 async fn login() -> Redirect {
-    let client = get_client();
-    let (auth_url, _) = client
+    let (auth_url, _) = CLIENT
         .authorize_url(CsrfToken::new_random)
         // Set the desired scopes.
         .add_scope(Scope::new("guilds".to_string()))
@@ -44,14 +43,18 @@ async fn callback_success(
     _state: Option<String>,
     jar: &CookieJar<'_>,
 ) -> Flash<Redirect> {
-    let oauth_client = get_client();
-
-    let result = oauth_client
+    println!("1");
+    let result = CLIENT
         .exchange_code(AuthorizationCode::new(code))
         .request_async(async_http_client)
         .await
-        .ok();
-
+        .map(Option::Some)
+        .unwrap_or_else(|e| {
+            println!("1.5");
+            dbg!(e);
+            None
+        });
+    println!("2");
     if let Some(response) = result {
         let user = User {
             access_token: response.access_token().clone(),
@@ -60,11 +63,12 @@ async fn callback_success(
             refresh_token: response.refresh_token().unwrap().clone(),
             scopes: response.scopes().unwrap().clone(),
         };
-
+        println!("3");
         jar.add_private(Cookie::build("user", serde_json::to_string(&user).unwrap()).finish());
-
+        println!("4");
         Flash::success(Redirect::to("/static/callback.html"), "Logged in")
     } else {
+        println!("5");
         Flash::error(Redirect::to("/static/callback.html"), "Failed to log in")
     }
 }
@@ -85,6 +89,15 @@ async fn logout(cookies: &CookieJar<'_>) -> Flash<Redirect> {
     Flash::success(Redirect::to("/"), "Logged out")
 }
 
+#[get("/invite?<guild_id>")]
+async fn invite(guild_id: u64) -> Redirect {
+    Redirect::to(format!(
+        "https://discord.com/api/oauth2/authorize?client_id={}&scope=bot%20applications.commands&permissions=1611000937&redirect_uri=https%3A%2F%2Fdashboard.squid.pink%2Fapi%2Foauth%2Fcallback&guild_id={}&response_type=code",
+        var("CLIENT_ID").unwrap(),
+        guild_id
+    ))
+}
+
 pub fn routes() -> Vec<rocket::Route> {
-    routes![login, callback_success, callback_error, logout]
+    routes![login, callback_success, callback_error, logout, invite]
 }

@@ -8,7 +8,7 @@
         },
         "bypass_roles": {
             "name": "Bypass Roles",
-            "type": "list",
+            "type": "roles",
             "description": "These roles will **always** bypass all requirements in a giveaway",
             "default": []
         },
@@ -107,18 +107,24 @@
             "type": "string",
             "description": "The message that gets sent to people to confirm that their entry has been recieved. If a user does not recieve a dm but has still reacted **they will still be considered**",
             "default": "Your entry for [this]({message(jump_url)}) giveaway has been approved"
+        },
+        "donor_channel": {
+            "name": "Donor Channel",
+            "type": "channel",
+            "description": "The channel that the giveaway will be sent to when a donor giveaway request is accepted (see /giveaway donate)",
+            "default": null
         }
     },
     "utility": {
         "afk_blacklist_roles": {
             "name": "AFK Blacklist Roles",
-            "type": "list",
+            "type": "roles",
             "description": "Roles that are blacklisted from using afk",
             "default": []
         },
         "afk_roles": {
             "name": "AFK Roles",
-            "type": "list",
+            "type": "roles",
             "description": "The roles that a user requires to use the afk command",
             "default": []
         },
@@ -194,7 +200,7 @@
             "name": "Trade Logging Channel",
             "type": "channel",
             "description": "The channel to send trade logs into",
-            "default": "None"
+            "default": null
         },
         "trade_logging_message": {
             "name": "Trade Logging Message",
@@ -208,7 +214,7 @@
             "name": "Donator Logging Channels",
             "type": "string",
             "description": "The channel that donations get logged to",
-            "default": "None"
+            "default": null
         },
         "logging_message": {
             "name": "Donator Logging Message",
@@ -218,7 +224,7 @@
         },
         "roles": {
             "name": "Donator Roles",
-            "type": "list",
+            "type": "roles",
             "description": "The roles that can manage donations",
             "default": []
         }
@@ -234,7 +240,7 @@
             "name": "Reputation Logging Channels",
             "type": "string",
             "description": "The channel to log reputation increases into",
-            "default": "None"
+            "default": null
         },
         "logging_message": {
             "name": "Reputation Logging Message",
@@ -246,11 +252,11 @@
             "name": "Reputation Requirement",
             "type": "string",
             "description": "The requirement a user needs to add or remove reputation",
-            "default": "None"
+            "default": null
         },
         "roles": {
             "name": "Reputation Roles",
-            "type": "list",
+            "type": "roles",
             "description": "These are the roles that can manage reputation counts for different users",
             "default": []
         }

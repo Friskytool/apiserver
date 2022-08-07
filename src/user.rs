@@ -1,4 +1,7 @@
-use crate::{db::Redis, models::User};
+use crate::{
+    db::Redis,
+    models::{user::Guild, User},
+};
 use deadpool_redis::redis::AsyncCommands;
 use rocket::routes;
 use rocket_db_pools::Connection;
@@ -20,20 +23,31 @@ async fn guilds(mut conn: Connection<Redis>, user: User) -> Option<Value> {
         .await
         .ok();
 
-    if let Some(data) = guilds {
-        Some(serde_json::from_str(&data).unwrap())
+    let mut data: Vec<Guild>;
+
+    if let Some(d) = guilds {
+        data = serde_json::from_str(&d).unwrap();
     } else {
-        let data = user.get_guilds().await;
+        data = user.get_guilds().await.unwrap_or_default();
         let _: Option<()> = conn
             .set_ex(
                 format!("user:{}:guilds", user.access_token.secret()),
                 serde_json::to_string(&data).unwrap(),
-                3600,
+                360,
             )
             .await
             .ok();
-        data
     }
+    for mut guild in data.iter_mut() {
+        guild.bot_in_guild = Some(
+            conn.sismember("guild", guild.id.clone())
+                .await
+                .unwrap_or_else(|e| unreachable!("{}", e)),
+        )
+    }
+    dbg!(&data);
+
+    serde_json::to_value(data).ok()
 }
 
 pub fn routes() -> Vec<rocket::Route> {

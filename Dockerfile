@@ -25,7 +25,7 @@ COPY --from=cacher /backend/target target
 COPY --from=cacher $CARGO_HOME $CARGO_HOME
 RUN cargo build --release --target=x86_64-unknown-linux-musl --bin backend
 
-FROM debian:bullseye as runtime
+FROM alpine:latest as runtime
 WORKDIR /backend
 RUN apk add --no-cache ca-certificates
 COPY --from=builder /backend/target/x86_64-unknown-linux-musl/release/backend /usr/local/bin
